@@ -82,5 +82,11 @@ process.stdin.addListener("data", async (data) => {
          result,
       );
    });
+
+   const toolResponse: GenerateContentResponse = await context.sendMessage({
+      message: functionResponseParts,
+   });
+
+   console.log(toolResponse.text);
 });
 
