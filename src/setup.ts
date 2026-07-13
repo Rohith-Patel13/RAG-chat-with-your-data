@@ -7,18 +7,47 @@ const clubInfo = `The university chess club provides an outlet for students to c
 
 const universityInfo = `The University of Washington, founded in 1861 in Seattle, is a public research university with over 45,000 students across three campuses in Seattle, Tacoma, and Bothell. As the flagship institution of the six public universities in Washington state, UW encompasses over 500 buildings and 20 million square feet of space, including one of the largest library systems in the world.`;
 
-class Setup {
-  async createEmbeddings() {
-    return await chromaClientLibrary.addDocument("info", {
-      ids: [
-        ulidLibrary.getUlidId(),
-        ulidLibrary.getUlidId(),
-        ulidLibrary.getUlidId(),
-      ],
-      documents: [studentInfo, clubInfo, universityInfo],
-    });
-  }
+
+async function createCollection() {
+   return await chromaClientLibrary.createCollection("info");
 }
 
-const setup = new Setup();
-export { setup };
+async function createEmbeddings() {
+   return await chromaClientLibrary.addDocument("info", {
+      ids: [
+      ulidLibrary.getUlidId(),
+      ulidLibrary.getUlidId(),
+      ulidLibrary.getUlidId(),
+      ],
+      documents: [studentInfo, clubInfo, universityInfo],
+   });
+}
+
+async function setup() {
+   try {
+      await createCollection();
+      await createEmbeddings();
+      console.log("Setup completed successfully.");
+   } catch (error) {
+      console.error("Error during setup:", error);
+   }
+}
+
+async function listCollections() {
+   try {
+      const collections = await chromaClientLibrary.listCollections();
+      console.log("Collections:", collections);
+   } catch (error) {
+      console.error("Error listing collections:", error);
+   }
+}
+
+async function getRecords() {
+   try {
+      const records = await chromaClientLibrary.getRecordsByCollection("info");
+      console.log("Records in 'info' collection:", records);
+   } catch (error) {
+      console.error("Error retrieving records:", error);
+   }
+}
+getRecords();
