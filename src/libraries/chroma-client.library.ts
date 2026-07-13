@@ -20,13 +20,13 @@
  *
  */
 import "dotenv/config";
-import { ChromaClient, Collection, Metadata } from "chromadb";
+import { ChromaClient, Collection, Metadata, QueryResult } from "chromadb";
 import { GoogleGeminiEmbeddingFunction } from "@chroma-core/google-gemini";
 
 // Initialize the embedder
 const embedder = new GoogleGeminiEmbeddingFunction({
   apiKey: process.env.GEMINI_API_KEY!, // Or set GEMINI_API_KEY env var
-  modelName: "gemini-embedding-2", // Optional, defaults to latest model
+  modelName: "gemini-embedding-001", // Optional, defaults to latest model
   taskType: "RETRIEVAL_DOCUMENT", // Optional
 });
 
@@ -124,7 +124,7 @@ class ChromaClientLibrary {
       if (!collection) {
         throw new Error(`Collection '${collectionName}' does not exist.`);
       }
-      const results = await collection.query({
+      const results: QueryResult<Metadata> = await collection.query({
         queryTexts: [query],
         nResults: nResults,
         include: ["metadatas", "documents", "embeddings", "uris", "distances"],

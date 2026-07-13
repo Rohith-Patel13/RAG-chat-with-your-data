@@ -5,11 +5,12 @@ import { geminiClientLibrary } from "./libraries/gemini-client.library";
 import { chromaClientLibrary } from "./libraries/chroma-client.library";
 
 
-function async getInfo(args: Record<string, unknown>) {
+async function getInfo(args: Record<string, unknown>) {
    const vectorSearch = await chromaClientLibrary.vectorSearch(
-     "info",
+     "details",
      args.input as string
    );
+   return vectorSearch;
 }
 
 const availableFunctions: Record<string, (args: Record<string, unknown>) => unknown> = {
@@ -18,17 +19,14 @@ const availableFunctions: Record<string, (args: Record<string, unknown>) => unkn
 
 const getInfoDeclaration: FunctionDeclaration = {
   name: "getInfo",
-  description: "Get information about a topic like student info, club info, or university info.",
+  description: "Get details about a topic like student details, club details, or university details.",
   parametersJsonSchema: {
-    type: "OBJECT",
-    properties: { 
-      "type": "object", 
-      "properties": { 
-         "input": { "type": "string" }, 
-      }, 
-      "additionalProperties": false, 
-      "required": ["input"], 
+    type: "object",
+    properties: {
+      input: { type: "string" },
     },
+    additionalProperties: false,
+    required: ["input"],
   },
 };
 
@@ -39,7 +37,7 @@ const TOOLS = [
 ];
 
 let context = geminiClientLibrary.ai.chats.create({
-  model: "gemini-embedding-2",
+  model: "gemini-2.5-flash", 
   config: {
     systemInstruction: "you are a helpful chatbot",
     tools: TOOLS,
@@ -82,7 +80,7 @@ process.stdin.addListener("data", async (data) => {
       return createPartFromFunctionResponse(
          call.id ?? call.name!,
          call.name!,
-         result,
+         result as Record<string, unknown>
       );
    });
 

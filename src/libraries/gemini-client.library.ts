@@ -14,7 +14,7 @@ class GeminiClientLibrary {
 
   async generateEmbedding(input: string) {
     const response: EmbedContentResponse = await this.ai.models.embedContent({
-      model: "gemini-embedding-2",
+      model: "gemini-embedding-001",
       contents: input,
     });
 

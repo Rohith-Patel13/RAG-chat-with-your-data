@@ -9,11 +9,11 @@ const universityInfo = `The University of Washington, founded in 1861 in Seattle
 
 
 async function createCollection() {
-   return await chromaClientLibrary.createCollection("info");
+   return await chromaClientLibrary.createCollection("details");
 }
 
 async function createEmbeddings() {
-   return await chromaClientLibrary.addDocument("info", {
+   return await chromaClientLibrary.addDocument("details", {
       ids: [
       ulidLibrary.getUlidId(),
       ulidLibrary.getUlidId(),
@@ -44,8 +44,8 @@ async function listCollections() {
 
 async function getRecords() {
    try {
-      const records = await chromaClientLibrary.getRecordsByCollection("info");
-      console.log("Records in 'info' collection:", records);
+      const records = await chromaClientLibrary.getRecordsByCollection("details");
+      console.log("Records in 'details' collection:", records);
    } catch (error) {
       console.error("Error retrieving records:", error);
    }
