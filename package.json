@@ -16,7 +16,8 @@
     "@chroma-core/google-gemini": "^0.1.10",
     "@google/genai": "^2.10.0",
     "chromadb": "^3.5.0",
-    "dotenv": "^17.4.2"
+    "dotenv": "^17.4.2",
+    "ulidx": "^2.4.1"
   },
   "devDependencies": {
     "@types/node": "^26.0.1",
