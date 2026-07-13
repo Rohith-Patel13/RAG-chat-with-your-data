@@ -65,24 +65,26 @@ process.stdin.addListener("data", async (data) => {
 
    console.log(`tool call is required: ${functionCalls?.length}`);
 
-   const functionResponseParts: Part[] = functionCalls.map((call) => {
-      console.log(`[tool] executing "${call.name}" with args:`, call.args);
+   const functionResponseParts: Part[] = await Promise.all(
+      functionCalls.map(async (call) => {
+         console.log(`[tool] executing "${call.name}" with args:`, call.args);
 
-      const fn = call.name ? availableFunctions[call.name] : undefined;
-      const result = fn
-         ? fn(call.args ?? {})
-         : { error: `Unknown function: ${call.name}` };
+         const fn = call.name ? availableFunctions[call.name] : undefined;
+         const result = fn
+            ? await fn(call.args ?? {})
+            : { error: `Unknown function: ${call.name}` };
 
-      console.log(`[tool] "${call.name}" result:`, result);
+         console.log(`[tool] "${call.name}" result:`, result);
 
-      // Package the local result back into the shape Gemini expects
-      // (a Part containing a functionResponse keyed by call id/name).
-      return createPartFromFunctionResponse(
-         call.id ?? call.name!,
-         call.name!,
-         result as Record<string, unknown>
-      );
-   });
+         // Package the local result back into the shape Gemini expects
+         // (a Part containing a functionResponse keyed by call id/name).
+         return createPartFromFunctionResponse(
+            call.id ?? call.name!,
+            call.name!,
+            result as Record<string, unknown>
+         );
+      }),
+   );
 
    const toolResponse: GenerateContentResponse = await context.sendMessage({
       message: functionResponseParts,
