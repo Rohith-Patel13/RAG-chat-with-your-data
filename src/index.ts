@@ -2,19 +2,22 @@
 
 import { createPartFromFunctionResponse, EmbedContentResponse, FunctionCall, FunctionDeclaration, GenerateContentResponse, Part } from "@google/genai";
 import { geminiClientLibrary } from "./libraries/gemini-client.library";
+import { chromaClientLibrary } from "./libraries/chroma-client.library";
 
 
 function async getInfo(args: Record<string, unknown>) {
-   const generateInputEmbedding: EmbedContentResponse =
-     await geminiClientLibrary.generateEmbedding(args.input as string);
+   const vectorSearch = await chromaClientLibrary.vectorSearch(
+     "info",
+     args.input as string
+   );
 }
 
 const availableFunctions: Record<string, (args: Record<string, unknown>) => unknown> = {
-   "get_info": getInfo,
+   "getInfo": getInfo,
 };
 
 const getInfoDeclaration: FunctionDeclaration = {
-  name: "get_info",
+  name: "getInfo",
   description: "Get information about a topic like student info, club info, or university info.",
   parametersJsonSchema: {
     type: "OBJECT",

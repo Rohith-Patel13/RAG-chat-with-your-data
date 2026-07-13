@@ -111,6 +111,34 @@ class ChromaClientLibrary {
       throw error;
     }
   }
+
+  async vectorSearch(
+    collectionName: string,
+    query: string,
+    nResults: number = 5,
+  ) {
+    try {
+      const collection: Collection = await client.getCollection({
+        name: collectionName,
+      });
+      if (!collection) {
+        throw new Error(`Collection '${collectionName}' does not exist.`);
+      }
+      const results = await collection.query({
+        queryTexts: [query],
+        nResults: nResults,
+        include: ["metadatas", "documents", "embeddings", "uris", "distances"],
+      });
+      console.log(`Vector search completed for query: "${query}"`);
+      return results;
+    } catch (error) {
+      console.error(
+        `Error performing vector search in collection '${collectionName}':`,
+        error,
+      );
+      throw error;
+    }
+  }
 }
 
 const chromaClientLibrary = new ChromaClientLibrary();
