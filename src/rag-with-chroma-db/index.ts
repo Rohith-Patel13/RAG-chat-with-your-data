@@ -1,8 +1,8 @@
 
 
 import { createPartFromFunctionResponse, EmbedContentResponse, FunctionCall, FunctionDeclaration, GenerateContentResponse, Part } from "@google/genai";
-import { geminiClientLibrary } from "./libraries/gemini-client.library";
-import { chromaClientLibrary } from "./libraries/chroma-client.library";
+import { geminiClientLibrary } from "../libraries/gemini-client.library";
+import { chromaClientLibrary } from "../libraries/chroma-client.library";
 
 
 async function getInfo(args: Record<string, unknown>) {

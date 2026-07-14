@@ -4,8 +4,8 @@
   "description": "A simple project to chat with your data using Chroma and Google Gemini.",
   "main": "index.js",
   "scripts": {
-    "setup": "ts-node-dev --respawn src/setup.ts",
-    "dev": "ts-node-dev --respawn src/index.ts",
+    "setup": "ts-node-dev --respawn src/rag-with-chroma-db/setup.ts",
+    "dev": "ts-node-dev --respawn src/rag-with-chroma-db/index.ts",
     "chroma": "\"C:\\Users\\rohit\\AppData\\Roaming\\Python\\Python312\\Scripts\\chroma.exe\" run --path ./chroma-data",
     "build": "tsc",
     "start": "node dist/index.js"
