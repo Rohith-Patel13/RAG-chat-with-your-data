@@ -38,6 +38,9 @@ class ChromaClientLibrary {
       const collection: Collection = await client.createCollection({
         name: collectionName,
         embeddingFunction: embedder,
+        // Gemini embeddings are normalized, so cosine similarity is a more
+        // reliable relevance signal than the default L2 (Euclidean) distance.
+        configuration: { hnsw: { space: "cosine" } },
       });
       console.log(`Collection '${collectionName}' created successfully.`);
       return collection;

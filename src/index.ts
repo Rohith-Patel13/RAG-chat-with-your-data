@@ -7,7 +7,7 @@ import { chromaClientLibrary } from "./libraries/chroma-client.library";
 
 async function getInfo(args: Record<string, unknown>) {
    const vectorSearch = await chromaClientLibrary.vectorSearch(
-     "details",
+     "metadata",
      args.input as string
    );
    return vectorSearch;
