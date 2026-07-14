@@ -11,14 +11,17 @@ class PineconeClientLibrary {
    async createIndex(name: string) {
       try {
          const index = await pc.createIndex({
-            name,
-            dimension: 768,
-            metric: "cosine",
-            spec: {
-
+         name,
+         dimension: 768,
+         metric: "cosine",
+         spec: {
+            serverless: {
+               cloud: "aws", // or "gcp" / "azure" — match what you picked in the console
+               region: "us-east-1", // match your selected region
             },
-            vectorType: "dense",
-         })
+         },
+         vectorType: "dense",
+         });
       } catch (error) {
          console.error("Error creating index:", error);
       }
@@ -26,4 +29,4 @@ class PineconeClientLibrary {
 }
 
 const pineconeClientLibrary = new PineconeClientLibrary();
-export { PineconeClientLibrary };
+export { pineconeClientLibrary };
