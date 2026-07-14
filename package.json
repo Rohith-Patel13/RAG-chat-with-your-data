@@ -15,6 +15,7 @@
   "dependencies": {
     "@chroma-core/google-gemini": "^0.1.10",
     "@google/genai": "^2.10.0",
+    "@pinecone-database/pinecone": "^8.0.0",
     "chromadb": "^3.5.0",
     "dotenv": "^17.4.2",
     "ulidx": "^2.4.1"
