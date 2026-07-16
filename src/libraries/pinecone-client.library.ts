@@ -1,19 +1,27 @@
 
 import "dotenv/config";
 
-import { Pinecone, UpsertOptions } from "@pinecone-database/pinecone";
+import {
+  Pinecone,
+  PineconeRecord,
+  RecordMetadata,
+} from "@pinecone-database/pinecone";
 
 const pc = new Pinecone({
   apiKey: process.env.PINECONE_API_KEY!,
 });
 
-type RecordMetadata = Record<string, string | boolean | number | Array<string>>;
+// Must match the `outputDimensionality` used when generating embeddings
+// with geminiClientLibrary.generateEmbedding(), otherwise upserts/queries
+// will fail with a dimension mismatch.
+const EMBEDDING_DIMENSION = 768;
+
 class PineconeClientLibrary {
   async createIndex(name: string) {
     try {
       const index = await pc.createIndex({
         name,
-        dimension: 768,
+        dimension: EMBEDDING_DIMENSION,
         metric: "cosine",
         spec: {
           serverless: {
@@ -22,34 +30,46 @@ class PineconeClientLibrary {
           },
         },
         vectorType: "dense",
+        // Don't throw if the index already exists, and wait for the
+        // serverless index to be ready before the caller starts upserting.
+        suppressConflicts: true,
+        waitUntilReady: true,
       });
+      console.log(`Index '${name}' created successfully.`);
+      return index;
     } catch (error) {
-      console.error("Error creating index:", error);
+      console.error(`Error creating index '${name}':`, error);
+      throw error;
     }
   }
 
-  async addDocument(
-    indexName: string,
-    document: any,
-  ) {
+  async addDocument(indexName: string, records: PineconeRecord<RecordMetadata>[]) {
     try {
-      const index = await pc.index({ name: indexName });
-      await index.upsert({ records: document });
+      const index = pc.index({ name: indexName });
+      await index.upsert({ records });
+      console.log(`${records.length} document(s) added to index '${indexName}' successfully.`);
     } catch (error) {
-      console.error("Error adding document:", error);
+      console.error(`Error adding document to index '${indexName}':`, error);
+      throw error;
     }
   }
 
-  async vectorSearch(indexName: string, vector: number[]) {
+  async vectorSearch(indexName: string, vector: number[], topK: number = 5) {
     try {
-      const index = await pc.index({ name: indexName });
-      const results = await index.query({ vector, topK: 5 });
+      const index = pc.index({ name: indexName });
+      const results = await index.query({
+        vector,
+        topK,
+        includeMetadata: true,
+      });
+      console.log(`Vector search completed in index '${indexName}'.`);
       return results;
     } catch (error) {
-      console.error("Error performing vector search:", error);
+      console.error(`Error performing vector search in index '${indexName}':`, error);
+      throw error;
     }
   }
 }
 
 const pineconeClientLibrary = new PineconeClientLibrary();
-export { pineconeClientLibrary };
+export { pineconeClientLibrary, EMBEDDING_DIMENSION };

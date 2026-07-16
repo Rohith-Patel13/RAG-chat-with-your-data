@@ -7,14 +7,26 @@ import {
   Part,
 } from "@google/genai";
 import { geminiClientLibrary } from "../libraries/gemini-client.library";
-import { pineconeClientLibrary } from "../libraries/pinecone-client.library";
+import {
+  pineconeClientLibrary,
+  EMBEDDING_DIMENSION,
+} from "../libraries/pinecone-client.library";
 
 async function getInfo(args: Record<string, unknown>) {
-  const input = args.input as string
-  const inputEmbedding = await geminiClientLibrary.generateEmbedding(input);
+  const input = args.input as string;
+  const inputEmbedding = await geminiClientLibrary.generateEmbedding(input, {
+    taskType: "RETRIEVAL_QUERY",
+    outputDimensionality: EMBEDDING_DIMENSION,
+  });
+
+  const values = inputEmbedding.embeddings?.[0]?.values;
+  if (!values) {
+    throw new Error(`Failed to generate embedding for query: "${input}"`);
+  }
+
   const vectorSearch = await pineconeClientLibrary.vectorSearch(
     "test-index",
-    inputEmbedding.embeddings[0],
+    values,
   );
   return vectorSearch;
 }
@@ -46,7 +58,7 @@ const TOOLS = [
   },
 ];
 
-let context = geminiClientLibrary.ai.chats.create({
+const context = geminiClientLibrary.ai.chats.create({
   model: "gemini-2.5-flash",
   config: {
     systemInstruction: "you are a helpful chatbot",

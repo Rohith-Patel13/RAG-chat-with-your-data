@@ -1,5 +1,12 @@
+import { PineconeRecord, RecordMetadata } from "@pinecone-database/pinecone";
 import { ulidLibrary } from "../libraries/ulid.library";
-import { pineconeClientLibrary } from "../libraries/pinecone-client.library";
+import { geminiClientLibrary } from "../libraries/gemini-client.library";
+import {
+  pineconeClientLibrary,
+  EMBEDDING_DIMENSION,
+} from "../libraries/pinecone-client.library";
+
+const INDEX_NAME = "test-index";
 
 const infos = [
   `Alexandra Thompson, a 19-year-old computer science sophomore with a 3.7 GPA, is a member of the programming and chess clubs who enjoys pizza, swimming, and hiking in her free time in hopes of working at a tech company after graduating from the University of Washington.`,
@@ -8,16 +15,32 @@ const infos = [
 ];
 
 async function createEmbeddings() {
+   const records: PineconeRecord<RecordMetadata>[] = [];
+
    for (const info of infos) {
-    return await pineconeClientLibrary.addDocument("test-index", {
-       ids: [ulidLibrary.getUlidId()],
-       documents: [info],
-    });
+      const embedding = await geminiClientLibrary.generateEmbedding(info, {
+         taskType: "RETRIEVAL_DOCUMENT",
+         outputDimensionality: EMBEDDING_DIMENSION,
+      });
+
+      const values = embedding.embeddings?.[0]?.values;
+      if (!values) {
+         throw new Error(`Failed to generate embedding for: "${info}"`);
+      }
+
+      records.push({
+         id: ulidLibrary.getUlidId(),
+         values,
+         metadata: { document: info },
+      });
    }
+
+   return await pineconeClientLibrary.addDocument(INDEX_NAME, records);
 }
 
 async function setup() {
    try {
+      // await pineconeClientLibrary.createIndex(INDEX_NAME);
       await createEmbeddings();
       console.log("Setup completed successfully.");
    } catch (error) {
