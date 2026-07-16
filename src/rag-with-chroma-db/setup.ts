@@ -1,5 +1,5 @@
-import { ulidLibrary } from "./libraries/ulid.library";
-import { chromaClientLibrary } from "./libraries/chroma-client.library";
+import { ulidLibrary } from "../libraries/ulid.library";
+import { chromaClientLibrary } from "../libraries/chroma-client.library";
 
 const studentInfo = `Alexandra Thompson, a 19-year-old computer science sophomore with a 3.7 GPA, is a member of the programming and chess clubs who enjoys pizza, swimming, and hiking in her free time in hopes of working at a tech company after graduating from the University of Washington.`;
 

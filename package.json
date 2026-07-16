@@ -4,8 +4,8 @@
   "description": "A simple project to chat with your data using Chroma and Google Gemini.",
   "main": "index.js",
   "scripts": {
-    "setup": "ts-node-dev --respawn src/setup.ts",
-    "dev": "ts-node-dev --respawn src/index.ts",
+    "setup": "ts-node-dev --respawn src/rag-with-pinecone-db/setup.ts",
+    "dev": "ts-node-dev --respawn src/rag-with-pinecone-db/index.ts",
     "chroma": "\"C:\\Users\\rohit\\AppData\\Roaming\\Python\\Python312\\Scripts\\chroma.exe\" run --path ./chroma-data",
     "build": "tsc",
     "start": "node dist/index.js"
@@ -15,6 +15,7 @@
   "dependencies": {
     "@chroma-core/google-gemini": "^0.1.10",
     "@google/genai": "^2.10.0",
+    "@pinecone-database/pinecone": "^8.0.0",
     "chromadb": "^3.5.0",
     "dotenv": "^17.4.2",
     "ulidx": "^2.4.1"
